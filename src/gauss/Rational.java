@@ -1,6 +1,7 @@
 package gauss;
 
 import java.math.BigInteger;
+import java.util.Objects;
 import java.util.Optional;
 
 // Immutable unbounded rational numbers.
@@ -90,6 +91,11 @@ public class Rational implements Comparable<Rational> {
         }
         var x = (Rational)other;
         return num.equals(x.num) && den.equals(x.den);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(num, den);
     }
 
     private static final BigInteger BIG_TWO = BigInteger.valueOf(2);
