@@ -64,46 +64,46 @@ public class Matrix {
         }
     }
 
-    // Solves equation `this * x = y` and returns x.
-    // If a finite solution doesn't exist, returns nothing.
+    // Finds x in equation `this * x = y`.
     // Input matrices are not modified.
-    // TODO: Detect infinite solutions.
-    public Optional<Matrix> solve(Matrix y) {
+    public Solution<Matrix> solve(Matrix y) {
         if (height() != y.height()) {
             throw new IllegalArgumentException("Matrix heights don't match");
-        }
-        if (height() < width()) {
-            return Optional.empty();
         }
         int n = width();
         var aug = new Matrix(height(), n + y.width(), (i, j) -> {
             return j < n ? get(i, j) : y.get(i, j - n);
         });
-        for (int k = 0; k < n; ++k) {
-            int max = k;
-            for (int i = k+1; i < aug.height(); ++i) {
+        int rank = 0;
+        for (int k = 0; k < n && rank < aug.height(); ++k) {
+            int max = rank;
+            for (int i = rank+1; i < aug.height(); ++i) {
                 if (aug.get(i, k).abs().compareTo(aug.get(max, k).abs()) > 0) {
                     max = i;
                 }
             }
             if (aug.get(max, k).equals(Rational.ZERO)) {
-                return Optional.empty();
+                continue;
             }
             aug.swapRows(max, k);
             for (int i = 0; i < aug.height(); ++i) {
-                if (i == k) {
+                if (i == rank) {
                     continue;
                 }
-                var ratio = aug.get(i, k).div(aug.get(k, k));
-                aug.subtractRows(i, k, ratio);
+                var ratio = aug.get(i, k).div(aug.get(rank, k));
+                aug.subtractRows(i, rank, ratio);
             }
+            ++rank;
         }
-        for (int i = n; i < aug.height(); ++i) {
+        for (int i = rank; i < aug.height(); ++i) {
             for (int j = n; j < aug.width(); ++j) {
                 if (!aug.get(i, j).equals(Rational.ZERO)) {
-                    return Optional.empty();
+                    return Solution.none();
                 }
             }
+        }
+        if (rank != n) {
+            return Solution.infinite();
         }
         for (int k = 0; k < n; ++k) {
             var ratio = aug.get(k, k).inv();
@@ -112,7 +112,7 @@ public class Matrix {
         var result = new Matrix(n, y.width(), (i, j) -> {
             return aug.get(i, n + j);
         });
-        return Optional.of(result);
+        return Solution.unique(result);
     }
 
     @Override

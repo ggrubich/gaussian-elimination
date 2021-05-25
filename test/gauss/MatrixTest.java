@@ -16,7 +16,7 @@ public class MatrixTest {
     }
 
     @Test
-    public void testSolveOk() {
+    public void testSolveUnique() {
         var a = new Matrix(3, 3,
             new Rational(1), new Rational(3), new Rational(2),
             new Rational(2), new Rational(1, 2), new Rational(3),
@@ -30,12 +30,12 @@ public class MatrixTest {
             new Rational(12), new Rational(49, 4),
             new Rational(18), new Rational(13, 3));
         var x2 = a.solve(y);
-        assertTrue(x2.isPresent(), "solution exists");
-        assertMatrixEquals(x1, x2.get());
+        assertTrue(x2.isUnique(), "unique solution exists");
+        assertMatrixEquals(x1, x2.asUnique().get());
     }
 
     @Test
-    public void testSolveNoSolution() {
+    public void testSolveNone() {
         var a = new Matrix(3, 3,
             new Rational(1), new Rational(3), new Rational(2),
             new Rational(2), new Rational(1, 2), new Rational(3),
@@ -45,6 +45,32 @@ public class MatrixTest {
             new Rational(12),
             new Rational(18));
         var x = a.solve(y);
-        assertFalse(x.isPresent(), "solution doesn't exist");
+        assertTrue(x.isNone(), "solution doesn't exist");
+    }
+
+    @Test
+    public void testSolveInfinite1() {
+        var a = new Matrix(3, 3,
+            new Rational(1), new Rational(3), new Rational(2),
+            new Rational(2), new Rational(1, 2), new Rational(3),
+            new Rational(-8), new Rational(-2), new Rational(-12));
+        var y = new Matrix(3, 1,
+            new Rational(13),
+            new Rational(12),
+            new Rational(-48));
+        var x = a.solve(y);
+        assertTrue(x.isInfinite(), "solution is infinite");
+    }
+
+    @Test
+    public void testSolveInfinite2() {
+        var a = new Matrix(2, 3,
+            new Rational(1), new Rational(3), new Rational(2),
+            new Rational(2), new Rational(1, 2), new Rational(3));
+        var y = new Matrix(2, 1,
+            new Rational(13),
+            new Rational(12));
+        var x = a.solve(y);
+        assertTrue(x.isInfinite(), "solution is infinite");
     }
 }
