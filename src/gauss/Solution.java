@@ -1,5 +1,7 @@
 package gauss;
 
+import java.util.function.Function;
+
 // Solution of a matrix equation. There are three types of solutions:
 //  - none - equation has no solutions
 //  - infinite - equation has infinitely many solutions
@@ -51,4 +53,16 @@ public abstract class Solution<T> {
     public boolean isUnique() { return this instanceof Unique; }
 
     public Unique<T> asUnique() { return (Unique<T>)this; }
+
+    // Applies the function to contained unique solution's value and returns
+    // the new solution.
+    public <R> Solution<R> map(Function<T, R> fun) {
+        return accept(new Visitor<>() {
+            public Solution<R> visit(None<T> none) { return none(); }
+            public Solution<R> visit(Infinite<T> inf) { return infinite(); }
+            public Solution<R> visit(Unique<T> uniq) {
+                return unique(fun.apply(uniq.get()));
+            }
+        });
+    }
 }
