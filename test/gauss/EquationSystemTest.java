@@ -9,21 +9,9 @@ public class EquationSystemTest {
     @Test
     public void testSolveUnique() {
         var system = new EquationSystem();
-        system.add(new Equation()
-            .set("x1", new Rational(-2))
-            .set("x2", new Rational(3))
-            .set("x3", new Rational(1))
-            .setConst(new Rational(1)));
-        system.add(new Equation()
-            .set("x1", new Rational(-4))
-            .set("x2", new Rational(5))
-            .set("x3", new Rational(4))
-            .setConst(new Rational(7)));
-        system.add(new Equation()
-            .set("x1", new Rational(4))
-            .set("x2", new Rational(-9))
-            .set("x3", new Rational(2))
-            .setConst(new Rational(9)));
+        system.add(Equation.parse("-2*x1 + 3*x2 + x3 = -1"));
+        system.add(Equation.parse("-4*x1 + 5*x2 + 4*x3 = -7"));
+        system.add(Equation.parse("4*x1 - 9*x2 + 2*x3 = -9"));
         var expected = Map.of(
             "x1", new Rational(1),
             "x2", new Rational(1),
@@ -36,14 +24,8 @@ public class EquationSystemTest {
     @Test
     public void testSolveNone() {
         var system = new EquationSystem();
-        system.add(new Equation()
-            .set("x", new Rational(2))
-            .set("y", new Rational(3))
-            .setConst(new Rational(4)));
-        system.add(new Equation()
-            .set("x", new Rational(2))
-            .set("y", new Rational(3))
-            .setConst(new Rational(2)));
+        system.add(Equation.parse("2x + 3y + 4 = 0"));
+        system.add(Equation.parse("2x + 3y + 2 = 0"));
         var sol = system.solve();
         assertTrue(sol.isNone(), "no solution exists");
     }
@@ -51,16 +33,8 @@ public class EquationSystemTest {
     @Test
     public void testSolveInfinite() {
         var system = new EquationSystem();
-        system.add(new Equation()
-            .set("x", new Rational(1))
-            .set("y", new Rational(3))
-            .set("z", new Rational(4))
-            .setConst(new Rational(1)));
-        system.add(new Equation()
-            .set("x", new Rational(-2))
-            .set("y", new Rational(2))
-            .set("z", new Rational(1))
-            .setConst(new Rational(-3)));
+        system.add(Equation.parse("x + 3y + 4z = -1"));
+        system.add(Equation.parse("-2x + 2y + z = 3"));
         var sol = system.solve();
         assertTrue(sol.isInfinite(), "infinitely many solutions exist");
     }

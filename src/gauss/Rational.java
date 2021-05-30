@@ -29,6 +29,10 @@ public class Rational implements Comparable<Rational> {
         den = q;
     }
 
+    public Rational(BigInteger n) {
+        this(n, BigInteger.ONE);
+    }
+
     public Rational(long p, long q) {
         this(BigInteger.valueOf(p), BigInteger.valueOf(q));
     }
